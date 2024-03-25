@@ -1,0 +1,1 @@
+[DELETE /api/v1/devices/{deviceId}][200] actDeviceApiServiceRemoveDeviceV1OK  &{Found:false}

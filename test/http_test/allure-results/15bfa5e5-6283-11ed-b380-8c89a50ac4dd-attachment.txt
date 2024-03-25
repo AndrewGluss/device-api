@@ -1,0 +1,1 @@
+[POST /api/v1/devices][200] actDeviceApiServiceCreateDeviceV1OK  &{DeviceID:13}
