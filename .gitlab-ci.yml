@@ -1,0 +1,214 @@
+image: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/golang:1.19-alpine
+
+variables:
+  ADD_DATA: 'data from vars.yml'
+  DOCKER_AUTH_CONFIG: '{"auths":{"gitlab.ozon.dev":{"username":"$CI_DEPENDENCY_PROXY_USER","password":"$CI_DEPENDENCY_PROXY_PASSWORD"}}}'
+
+stages:
+  - build
+  - publish
+  - deploy
+  - e2e
+  - post-deploy
+  - close
+
+pre-commit:
+  stage: build
+  image: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/kiwicom/pre-commit
+  script:
+    - pre-commit run -a
+
+build:
+  stage: build
+  script:
+    - apk add --update make curl git protoc protobuf protobuf-dev
+    - make deps-go
+    - make build
+  artifacts:
+    paths:
+      - bin/
+    expire_in: 1 day
+
+linter:
+  stage: build
+  image: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/golangci/golangci-lint
+  allow_failure: true
+  script:
+    - golangci-lint run --new-from-rev=origin/master ./homeworks/... -v
+    - golangci-lint run --new-from-rev=origin/master ./test/... -v
+
+unit:
+  stage: build
+  before_script:
+    - apk add --update make curl git protoc protobuf protobuf-dev build-base
+    - go install gotest.tools/gotestsum@latest
+  script:
+    - make gotestsum
+  coverage: '/^total:\s+\(statements\)\s+\d+.\d+%$/'
+  artifacts:
+    when: always
+    paths:
+      - json-report.txt
+    reports:
+      junit: unit-tests.xml
+    expire_in: 1 day
+
+http_test:
+  stage: e2e
+  services:
+    - name: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/postgres:12
+      alias: postgres
+    - name: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/confluentinc/cp-zookeeper:7.1.0
+      alias: zookeeper
+    - name: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/confluentinc/cp-kafka:7.1.0
+      alias: kafka_1
+  variables:
+    # CI_DEBUG_TRACE: "true"
+    # enable network
+    FF_NETWORK_PER_BUILD: 1
+    # postgres variables
+    POSTGRES_USER: docker
+    POSTGRES_PASSWORD: docker
+    POSTGRES_DB: act_device_api
+    # zookeeper variables
+    zk_id: "1"
+    ZOOKEEPER_CLIENT_PORT: 32181
+    ZOOKEEPER_TICK_TIME: 2000
+    ZOOKEEPER_SYNC_LIMIT: 2
+    # kafka variables
+    KAFKA_ZOOKEEPER_CONNECT: "zookeeper:32181"
+    KAFKA_LISTENERS: "INTERNAL://kafka_1:9092,OUTSIDE://kafka_1:9094"
+    KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka_1:9092,OUTSIDE://localhost:9094"
+    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT"
+    KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  before_script:
+    - apk add --update make curl git protoc protobuf protobuf-dev build-base
+    - go install gotest.tools/gotestsum@latest
+    - make deps-go
+    - ./bin/grpc-server &
+    - sleep 5
+  script:
+    - go test -json -tags=http_test -v ./test/http_test/... > out.json
+    - cat out.json | gotestsum --format testname --junitfile junit-report.xml
+  coverage: '/^total:\s+\(statements\)\s+\d+.\d+%$/'
+  artifacts:
+    paths:
+      - out.json
+    when: always
+    reports:
+      junit: report.xml
+    expire_in: 1 day
+  needs:
+    - build
+
+
+grpc_test:
+  stage: e2e
+  services:
+    - name: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/postgres:12
+      alias: postgres
+    - name: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/confluentinc/cp-zookeeper:7.1.0
+      alias: zookeeper
+    - name: gitlab.ozon.dev/qa/classroom-4/students/dependency_proxy/containers/confluentinc/cp-kafka:7.1.0
+      alias: kafka_1
+  variables:
+    # enable network
+    FF_NETWORK_PER_BUILD: 1
+    # postgres variables
+    POSTGRES_USER: docker
+    POSTGRES_PASSWORD: docker
+    POSTGRES_DB: act_device_api
+    # zookeeper variables
+    zk_id: "1"
+    ZOOKEEPER_CLIENT_PORT: 32181
+    ZOOKEEPER_TICK_TIME: 2000
+    ZOOKEEPER_SYNC_LIMIT: 2
+    # kafka variables
+    KAFKA_ZOOKEEPER_CONNECT: "zookeeper:32181"
+    KAFKA_LISTENERS: "INTERNAL://kafka_1:9092,OUTSIDE://kafka_1:9094"
+    KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka_1:9092,OUTSIDE://localhost:9094"
+    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT"
+    KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  before_script:
+    - apk add --update make curl git protoc protobuf protobuf-dev build-base
+    - go install gotest.tools/gotestsum@latest
+    - make deps-go
+    - ./bin/grpc-server &
+    - sleep 5
+  script:
+    - go test -json -tags=grpc_test ./test/... -v > out.json
+    - cat out.json | gotestsum --format testname --junitfile junit-report.xml
+  needs:
+    - build
+
+create image:
+  stage: publish
+  script:
+    - echo "Create image for dev/stg"
+
+release image:
+  stage: publish
+  script:
+    - echo "Create image for prod"
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH && $CI_REF_NAME =~ /^(master|release)\/.+$/'
+      when: manual
+
+
+development:
+  stage: deploy
+  script:
+    - echo "Deploy to dev environment"
+
+staging:
+  stage: deploy
+  script:
+    - echo "Deploy to stg environment"
+
+staging latest:
+  stage: post-deploy
+  script:
+    - echo "Update stg with last version"
+
+production:
+  stage: deploy
+  script:
+    - echo "Deploy to prod environment"
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH && $CI_REF_NAME =~ /^(master|release)\/.+$/'
+      when: manual
+
+production latest:
+  stage: post-deploy
+  script:
+    - echo "Update production with last version"
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH && $CI_REF_NAME =~ /^(master|release)\/.+$/'
+      when: manual
+
+
+ready to prod:
+  stage: close
+  script:
+    - echo "Ready to prod"
+  rules:
+    - if: '$CI_COMMIT_BRANCH && $CI_REF_NAME =~ /^(devtask)\/.+$/'
+      when: manual
+
+close release:
+  stage: close
+  script:
+    - echo "Ready to prod"
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH && $CI_REF_NAME =~ /^(master|release)\/.+$/'
+      when: manual
