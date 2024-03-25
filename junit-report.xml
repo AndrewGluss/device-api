@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/cmd/act-device-api">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/cmd/grpc-server">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="8" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/homeworks/hw2">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/homeworks/hw2" name="TestFirstLetterUp/first_letter_is_lower,_last_letter_isnt_dot" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/homeworks/hw2" name="TestFirstLetterUp/firts_letter_is_upper,_last_letter_isnt_dot" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/homeworks/hw2" name="TestFirstLetterUp/firts_letter_is_lower,_last_letter_is_dot" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/homeworks/hw2" name="TestFirstLetterUp/firts_letter_is_upper,_last_letter_is_dot" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/homeworks/hw2" name="TestFirstLetterUp/firts_letter_is_lower,_last_letter_is_question_mark" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/homeworks/hw2" name="TestFirstLetterUp/firts_letter_is_upper,_last_letter_is_exclamation_mark" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/homeworks/hw2" name="TestFirstLetterUp/empty_string" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/homeworks/hw2" name="TestFirstLetterUp" time="0.000000"></testcase>
+	</testsuite>
+	<testsuite tests="11" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_good_morning_and_valid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_good_morning_and_invalid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_hello_and_valid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_hello_and_invalid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_good_evening_and_valid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_good_evening_and_invalid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_good_night_and_valid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_good_night_and_invalid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_invalid_hour_and_valid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet/test_hour_is_negative_integer_and_valid_name" time="0.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/hw3/greeter" name="TestGreet" time="0.000000"></testcase>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/api">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/app/consumer">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/app/producer">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/app/repo">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="3" failures="0" time="3.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/app/retranslator">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/app/retranslator" name="TestStart" time="1.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/app/retranslator" name="TestRemoveAfterSendSuccess" time="1.000000"></testcase>
+		<testcase classname="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/app/retranslator" name="TestUnlockAfterSendError" time="1.000000"></testcase>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/app/sender">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/config">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/database">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/mocks">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/model">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/pkg/logger">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/server">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/internal/tracer">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/test/http_clients/generated_client/http_client">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/test/http_clients/generated_client/http_client/act_device_api_service">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/test/http_clients/generated_client/http_client/act_notification_api_service">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+	<testsuite tests="0" failures="0" time="0.000000" name="gitlab.ozon.dev/qa/classroom-4/act-device-api/test/http_clients/generated_client/models">
+		<properties>
+			<property name="go.version" value="go1.19.1 linux/amd64"></property>
+		</properties>
+	</testsuite>
+</testsuites>

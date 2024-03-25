@@ -1,0 +1,116 @@
+version: "3.9"
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.20
+    restart: unless-stopped
+    logging:
+      driver: 'gelf'
+      options:
+        gelf-address: 'udp://localhost:12201'
+        tag: nginx
+    networks:
+      - ompnw
+    ports:
+      - 8080:8080
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - act-device-api
+      - swagger-ui
+
+  act-device-api:
+    container_name: act-device-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - ompnw
+    depends_on:
+      - postgres
+      - kafka_1
+    links:
+      - postgres
+      - kafka_1
+    ports:
+      - 8083:8080 # REST
+      - 8082:8082 # gRPC
+      - 9100:9100 # Metrics prometheus
+      - 8000:8000 # Status prometheus
+      - 40000:40000 # Debug port
+    healthcheck:
+      test: [ 'CMD', 'curl', '-v', 'http://localhost:8000/live' ]
+      interval: 10s
+      timeout: 10s
+      retries: 2
+      start_period: 20s
+    volumes:
+      - ./migrations:/root/migrations
+      - ./config.yml:/root/config.yml
+
+  swagger-ui:
+    container_name: swagger-ui
+    image: swaggerapi/swagger-ui:v4.10.3
+    #    ports:
+    #      # не открываем порт для доступа из вне композа. ходи через nginx http://localhost:8080/swagger/
+    #      - 8081:8080
+    restart: always
+    volumes:
+      - ./swagger:/swagger
+    environment:
+      SWAGGER_JSON: /swagger/ozonmp/act_device_api/v1/act_device_api.swagger.json
+    depends_on:
+      - act-device-api
+    networks:
+      - ompnw
+
+  victoria:
+    container_name: victoria-metrics
+    # - Используем образ victoria-metrics вместо обычного prometheus
+    # - Потому что он может притворяться influxDB и TSDB - что очень удобно для НТ
+    image: victoriametrics/victoria-metrics
+    restart: unless-stopped
+    # - Открываем порты виктории для HTTP метрик
+    ports:
+      - "8428:8428"
+      - "4242:4242"
+      - "8089:8089/tcp"
+      - "8089:8089/udp"
+    volumes:
+      # - Локальная директория для мониторинга
+      - ./docker/victoria:/victoria-metrics-data
+      # - Подключаем файл с конфигурацией прометеуса -именно в нем мы будем настраивать таргеты
+      - ./prometheus.yml:/prometheus.yml
+    command:
+      # - Включаем opentsdb
+      - -opentsdbHTTPListenAddr=:4242
+      # - Включаем influx
+      - -influxListenAddr=:8089
+      # - Подключаем Прометеус конфиг файл
+      - -promscrape.config=/prometheus.yml
+    # - Подключаем к сети наших контейнеров
+    networks:
+      - ompnw
+
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning/
+      - ./docker/grafana/data:/var/lib/grafana/
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_INSTALL_PLUGINS: "grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+    networks:
+      - ompnw
+
+networks:
+  ompnw:
+    driver: bridge
